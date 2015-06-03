@@ -8,4 +8,5 @@ README
 README.mkdn
 dist.ini
 lib/Catalyst/ActionSignatures.pm
+t/required-not-required.t
 t/signatures.t
