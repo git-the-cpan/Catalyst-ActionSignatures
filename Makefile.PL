@@ -19,18 +19,18 @@ my %WriteMakefileArgs = (
   "PREREQ_PM" => {
     "B::Hooks::Parser" => "0.12",
     "Carp" => "1.36",
-    "Catalyst::ActionRole::MethodSignatureDependencyInjection" => "0.012",
+    "Catalyst::ActionRole::MethodSignatureDependencyInjection" => "0.013",
     "Moose::Role" => "2.0602",
     "signatures" => "0.12"
   },
   "TEST_REQUIRES" => {
     "Catalyst" => "5.90090",
-    "Catalyst::ActionRole::MethodSignatureDependencyInjection" => "0.012",
+    "Catalyst::ActionRole::MethodSignatureDependencyInjection" => "0.013",
     "Moose" => "2.0602",
     "MooseX::MethodAttributes" => 0,
     "Test::Most" => 0
   },
-  "VERSION" => "0.003",
+  "VERSION" => "0.005",
   "test" => {
     "TESTS" => "t/*.t"
   }
@@ -41,7 +41,7 @@ my %FallbackPrereqs = (
   "B::Hooks::Parser" => "0.12",
   "Carp" => "1.36",
   "Catalyst" => "5.90090",
-  "Catalyst::ActionRole::MethodSignatureDependencyInjection" => "0.012",
+  "Catalyst::ActionRole::MethodSignatureDependencyInjection" => "0.013",
   "ExtUtils::MakeMaker" => 0,
   "Moose" => "2.0602",
   "Moose::Role" => "2.0602",

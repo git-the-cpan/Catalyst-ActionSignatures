@@ -8,5 +8,6 @@ README
 README.mkdn
 dist.ini
 lib/Catalyst/ActionSignatures.pm
+lib/Catalyst/ActionSignatures/Rationale.pod
 t/required-not-required.t
 t/signatures.t

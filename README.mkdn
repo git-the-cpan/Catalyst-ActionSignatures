@@ -40,6 +40,8 @@ after $c.
 You should review [Catalyst::ActionRole::MethodSignatureDependencyInjection](https://metacpan.org/pod/Catalyst::ActionRole::MethodSignatureDependencyInjection)
 for more on how to construct signatures.
 
+Also [Catalyst::ActionSignatures::Rationale](https://metacpan.org/pod/Catalyst::ActionSignatures::Rationale) may be useful.
+
 # Args and Captures
 
 If you specify args and captures in your method signature, you can leave off the
@@ -113,7 +115,18 @@ Chain with an implicit Args(0).
         $res->body('another_end');
       }
 
-# ENVIROMENT VARIABLES.
+# Model and View parameters
+
+If your Model or View is a factory that takes parameters, you may supply those
+from other existing dependencies:
+
+    # like $c->model('ReturnsArg', $id);
+    sub from_arg($res, Model::ReturnsArg<Arg $id isa '"Int"'> $model) :Local {
+      $res->body("model $model");
+      # $id is also available.
+    }
+
+# ENVIRONMENT VARIABLES.
 
 Set `CATALYST_METHODSIGNATURES_DEBUG` to true to get initial debugging output
 of the generated method signatures and attribute changes. Useful if you are
@@ -121,7 +134,8 @@ having trouble and want some help to offer a patch!
 
 # SEE ALSO
 
-[Catalyst::Action](https://metacpan.org/pod/Catalyst::Action), [Catalyst](https://metacpan.org/pod/Catalyst), [signatures](https://metacpan.org/pod/signatures)
+[Catalyst::Action](https://metacpan.org/pod/Catalyst::Action), [Catalyst](https://metacpan.org/pod/Catalyst), [signatures](https://metacpan.org/pod/signatures),
+[Catalyst::ActionRole::MethodSignatureDependencyInjection](https://metacpan.org/pod/Catalyst::ActionRole::MethodSignatureDependencyInjection)
 
 # AUTHOR
 

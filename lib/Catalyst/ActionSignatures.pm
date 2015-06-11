@@ -5,12 +5,12 @@ use B::Hooks::Parser;
 use Carp;
 extends 'signatures';
 
-our $VERSION = '0.003';
+our $VERSION = '0.005';
 
 around 'callback', sub {
   my ($orig, $self, $offset, $inject) = @_;
 
-  my @parts = map { $_=~s/^.*([\$\%\@]\w+).*$/$1/; $_ } split ',', $inject;
+  my @parts = map { ($_ =~ /([\$\%\@]\w+)/g) } split ',', $inject;
   my $signature = join(',', ('$self', @parts));
 
   $self->$orig($offset, $signature);
@@ -28,7 +28,7 @@ around 'callback', sub {
     $linestr =~s/\{/:Does(MethodSignatureDependencyInjection) :ExecuteArgsTemplate($inject) \{/;
 
     # How many numbered or unnumberd args?
-    my $count_args = scalar(my @countargs = $inject=~m/(Arg)[\d+\s]/ig);
+    my $count_args = scalar(my @countargs = $inject=~m/(Arg)[\d+\s\>]/ig);
     if($count_args and $attribute_area!~m/Args\(.+?\)/i) {
       
       my @constraints = ($inject=~m/Arg[\d+\s+][\$\%\@]\w+\s+isa\s+([\w"']+)/gi);
@@ -43,7 +43,7 @@ around 'callback', sub {
       }
     }
 
-    my $count_capture = scalar(my @countcaps = $inject=~m/(capture)[\d+\s]/ig);
+    my $count_capture = scalar(my @countcaps = $inject=~m/(capture)[\d+\s\>]/ig);
     if($count_capture and $attribute_area!~m/CaptureArgs\(.+?\)/i) {
 
       my @constraints = ($inject=~m/Capture[\d+\s+][\$\%\@]\w+\s+isa\s+([\w"']+)/gi);
@@ -68,12 +68,15 @@ around 'callback', sub {
     # is no Args present, add Args(0).
     ($attribute_area) = ($linestr =~m/\)(.*){/s);
     
-    if(
-        $attribute_area =~m/Chained\(['"]?\w+?\/['"]?\)/
-        && $attribute_area!~m/[\s\:]Args/i
-    ) {
-      $linestr =~s/Chained\(["']?(\w+?)\/["']?\)/Chained\($1\)/;
-      $linestr =~s/\{/ :Args(0) \{/;
+    if($attribute_area =~m/Chained\(['"]?\w+?\/['"]?\)/) {
+      if($attribute_area!~m/[\s\:]Args/i) {
+        $linestr =~s/Chained\(["']?(\w+?)\/["']?\)/Chained\($1\)/;
+        $linestr =~s/\{/ :Args(0) \{/;
+      } else {
+        # Ok so... someone used .../ BUT already declared Args.  Probably
+        # a very common type of error to make.  For now lets fix it.
+        $linestr =~s/Chained\(["']?(\w+?)\/["']?\)/Chained\($1\)/;
+      }
     }
 
     # If this is chained but no Args, Args($n) or Captures($n), then add 
@@ -138,6 +141,8 @@ after $c.
 
 You should review L<Catalyst::ActionRole::MethodSignatureDependencyInjection>
 for more on how to construct signatures.
+
+Also L<Catalyst::ActionSignatures::Rationale> may be useful.
 
 =head1 Args and Captures
 
@@ -212,7 +217,18 @@ Chain with an implicit Args(0).
         $res->body('another_end');
       }
 
-=head1 ENVIROMENT VARIABLES.
+=head1 Model and View parameters
+
+If your Model or View is a factory that takes parameters, you may supply those
+from other existing dependencies:
+
+    # like $c->model('ReturnsArg', $id);
+    sub from_arg($res, Model::ReturnsArg<Arg $id isa '"Int"'> $model) :Local {
+      $res->body("model $model");
+      # $id is also available.
+    }
+
+=head1 ENVIRONMENT VARIABLES.
 
 Set C<CATALYST_METHODSIGNATURES_DEBUG> to true to get initial debugging output
 of the generated method signatures and attribute changes. Useful if you are
@@ -220,7 +236,8 @@ having trouble and want some help to offer a patch!
 
 =head1 SEE ALSO
 
-L<Catalyst::Action>, L<Catalyst>, L<signatures>
+L<Catalyst::Action>, L<Catalyst>, L<signatures>,
+L<Catalyst::ActionRole::MethodSignatureDependencyInjection>
 
 =head1 AUTHOR
  
