@@ -27,4 +27,4 @@ resources:
   bugtracker: https://github.com/jjn1056/Catalyst-ActionSignatures/issues
   homepage: https://github.com/jjn1056/Catalyst-ActionSignatures
   repository: https://github.com/jjn1056/Catalyst-ActionSignatures.git
-version: '0.009'
+version: '0.010'
